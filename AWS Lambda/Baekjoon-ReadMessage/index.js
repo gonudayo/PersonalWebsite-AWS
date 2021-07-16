@@ -2,7 +2,7 @@ const AWS = require('aws-sdk');
 const ddb = new AWS.DynamoDB.DocumentClient({
     region: "ap-northeast-2"
 });
-var table_name = "Message";
+var table_name = "Message"; 
 exports.handler = (event, context, callback) => {
     let today = new Date();
     let year = today.getFullYear();
@@ -14,8 +14,8 @@ exports.handler = (event, context, callback) => {
     const params = {
         
         TableName: table_name,
-        ProjectionExpression: "#timevalue, messageId, countvalue",
-        FilterExpression: "#timevalue between :start and :end", 
+        ProjectionExpression: "#timevalue, messageId, countvalue, commitvalue",
+        FilterExpression: "#timevalue between :start and :end",
         ExpressionAttributeNames: {
             "#timevalue": "timevalue",
         },

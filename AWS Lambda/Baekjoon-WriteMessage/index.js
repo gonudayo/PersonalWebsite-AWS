@@ -2,10 +2,17 @@ const AWS = require('aws-sdk');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const url = "https://www.acmicpc.net/user/gonudayo";
+const url2 = "https://github.com/gonudayo?tab=overview&from=";
+
+let today = new Date();
+let year = today.getFullYear();
+let month = ("0" + (today.getMonth() + 1)).slice(-2);
+let date = ("0" + today.getDate()).slice(-2);
 
 let resultArr = [];
 let problems = 0;
-
+var string;
+var no = 0;
 
 const getData = async () => {
     try {
@@ -23,6 +30,24 @@ getData().then(html => {
         resultArr.push(itemObj);
     });
     problems = resultArr[1];
+});
+
+const getData2 = async () => {
+    try {
+        return await axios.get(url2+year+"-01-01");
+    } catch (error) {}
+};
+
+getData2().then(html => {
+
+    const $ = cheerio.load(html.data);
+    let parentTag = $("body div.js-yearly-contributions");
+
+    parentTag.each(function(i, elem) {
+        let itemObj = $(this).find("h2").text();
+        string=itemObj;
+    });
+    no = (string.replace(/[^0-9]/g,'')).slice(0, -4);
 });
 
 const ddb = new AWS.DynamoDB.DocumentClient({
@@ -46,10 +71,6 @@ exports.handler = async (event, context, callback) => {
 };
 
 function createMessage(requestId) {
-    let today = new Date();
-    let year = today.getFullYear();
-    let month = ("0" + (today.getMonth() + 1)).slice(-2);
-    let date = ("0" + today.getDate()).slice(-2);
 
     const params = {
 
@@ -57,7 +78,8 @@ function createMessage(requestId) {
         Item: {
             'messageId': requestId,
             'timevalue': Number(year + month + date ),
-            'countvalue': problems
+            'countvalue': problems,
+            'commitvalue': no
         }
     };
     return ddb.put(params).promise();
