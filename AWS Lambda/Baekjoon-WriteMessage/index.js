@@ -4,6 +4,10 @@ const cheerio = require('cheerio');
 const url = "https://www.acmicpc.net/user/gonudayo";
 const url2 = "https://github.com/gonudayo?tab=overview&from=";
 
+function sleep(ms) {
+    return new Promise((r) => setTimeout(r, ms));
+}
+
 let today = new Date();
 let year = today.getFullYear();
 let month = ("0" + (today.getMonth() + 1)).slice(-2);
@@ -34,7 +38,7 @@ getData().then(html => {
 
 const getData2 = async () => {
     try {
-        return await axios.get(url2+year+"-01-01");
+        return await axios.get(url2 + year + "-01-01");
     } catch (error) {}
 };
 
@@ -45,9 +49,9 @@ getData2().then(html => {
 
     parentTag.each(function(i, elem) {
         let itemObj = $(this).find("h2").text();
-        string=itemObj;
+        string = itemObj;
     });
-    no = (string.replace(/[^0-9]/g,'')).slice(0, -4);
+    no = (string.replace(/[^0-9]/g, '')).slice(0, -4);
 });
 
 const ddb = new AWS.DynamoDB.DocumentClient({
@@ -57,7 +61,7 @@ const ddb = new AWS.DynamoDB.DocumentClient({
 exports.handler = async (event, context, callback) => {
     const requestId = context.awsRequestId;
 
-    await createMessage(requestId).then(() => {
+    await sleep(5000).then(() => createMessage(requestId).then(() => {
         callback(null, {
             statusCode: 201,
             body: '',
@@ -67,7 +71,7 @@ exports.handler = async (event, context, callback) => {
         });
     }).catch((err) => {
         console.error(err);
-    });
+    }));
 };
 
 function createMessage(requestId) {
@@ -77,7 +81,7 @@ function createMessage(requestId) {
         TableName: 'Message',
         Item: {
             'messageId': requestId,
-            'timevalue': Number(year + month + date ),
+            'timevalue': Number(year + month + date),
             'countvalue': problems,
             'commitvalue': no
         }
