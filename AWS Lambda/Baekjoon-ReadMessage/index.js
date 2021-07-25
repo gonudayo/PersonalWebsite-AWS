@@ -2,14 +2,16 @@ const AWS = require('aws-sdk');
 const ddb = new AWS.DynamoDB.DocumentClient({
     region: "ap-northeast-2"
 });
-var table_name = "Message"; 
+var table_name = "Message";
 exports.handler = (event, context, callback) => {
     let today = new Date();
-    let year = today.getFullYear();
-    let month = ("0" + (today.getMonth() + 1)).slice(-2);
-    let startdate = ("0" + (today.getDate() - 2)).slice(-2);
-    let enddate = ("0" + (today.getDate() + 1)).slice(-2);
-
+    let before2= new Date(Date.parse(today) - 2 * 1000 * 60 * 60 * 24);
+    let startYear = before2.getFullYear();
+    let endYear = today.getFullYear();
+    let startMonth = ("0" + (before2.getMonth() + 1)).slice(-2);
+    let endMonth = ("0" + (today.getMonth() + 1)).slice(-2);
+    let startdate = ("0" + before2.getDate()).slice(-2);
+    let enddate = ("0" + today.getDate()).slice(-2);
 
     const params = {
         
@@ -20,8 +22,8 @@ exports.handler = (event, context, callback) => {
             "#timevalue": "timevalue",
         },
         ExpressionAttributeValues: {
-            ":start": Number(year + month + startdate),
-            ":end": Number(year + month + enddate)
+            ":start": Number(startYear + startMonth + startdate),
+            ":end": Number(endYear + endMonth + enddate)
         }
     };
 
