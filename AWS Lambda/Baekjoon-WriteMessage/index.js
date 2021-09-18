@@ -4,10 +4,6 @@ const cheerio = require('cheerio');
 const url = "https://www.acmicpc.net/user/gonudayo";
 const url2 = "https://github.com/gonudayo?tab=overview&from=";
 
-function sleep(ms) {
-    return new Promise((r) => setTimeout(r, ms));
-}
-
 let today = new Date();
 let year = today.getFullYear();
 let month = ("0" + (today.getMonth() + 1)).slice(-2);
@@ -61,7 +57,7 @@ const ddb = new AWS.DynamoDB.DocumentClient({
 exports.handler = async (event, context, callback) => {
     const requestId = context.awsRequestId;
 
-    await sleep(5000).then(() => createMessage(requestId).then(() => {
+    await getData().then(() => getData2().then(() => createMessage(requestId).then(() => {
         callback(null, {
             statusCode: 201,
             body: '',
@@ -71,7 +67,7 @@ exports.handler = async (event, context, callback) => {
         });
     }).catch((err) => {
         console.error(err);
-    }));
+    })));
 };
 
 function createMessage(requestId) {
