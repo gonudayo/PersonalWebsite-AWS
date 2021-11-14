@@ -1,1 +1,1 @@
-**[프론트엔드](https://github.com/gonudayo/PersonalWebsite-Netlify)**
+**[Deploying to Netlify](https://github.com/gonudayo/PersonalWebsite-Netlify)**
