@@ -10,7 +10,4 @@ def lambda_handler(event, context):
     return {
         'statusCode': 200,
         'body': stock,
-        'headers': {
-            'Access-Control-Allow-Origin': 'http://gunwoo.herokuapp.com/'
-        }
     }
